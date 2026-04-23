@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ADH Fiber Laser ROI Calculator</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #0f0f0f;
+    color: white;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: auto;
+    background: #1c1c1c;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  }
+
+  h1 { margin-bottom: 5px; }
+
+  input {
+    padding: 10px;
+    margin: 8px;
+    width: 180px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: none;
+  }
+
+  .row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .box {
+    margin: 10px;
+    padding: 15px;
+    background: #2a2a2a;
+    border-radius: 10px;
+    min-width: 220px;
+  }
+
+  button {
+    padding: 12px 20px;
+    font-size: 16px;
+    margin-top: 15px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background: #e74c3c;
+    color: white;
+  }
+
+  .result {
+    margin-top: 20px;
+    font-size: 18px;
+    background: #111;
+    padding: 15px;
+    border-radius: 10px;
+  }
+
+  .highlight {
+    color: #2ecc71;
+    font-weight: bold;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>ADH Fiber Laser ROI Calculator</h1>
+  <p>Show customers real payback in minutes</p>
+
+  <div class="row">
+
+    <div class="box">
+      <h3>Machine Cost</h3>
+      <input id="machineCost" type="number" value="250000">
+    </div>
+
+    <div class="box">
+      <h3>Current Labor Cost / Hour</h3>
+      <input id="labor" type="number" value="35">
+    </div>
+
+    <div class="box">
+      <h3>Old Cycle Time (min/part)</h3>
+      <input id="oldTime" type="number" value="5">
+    </div>
+
+    <div class="box">
+      <h3>New Laser Time (min/part)</h3>
+      <input id="newTime" type="number" value="1">
+    </div>
+
+    <div class="box">
+      <h3>Parts per Year</h3>
+      <input id="volume" type="number" value="50000">
+    </div>
+
+  </div>
+
+  <button onclick="calculateROI()">Calculate ROI</button>
+
+  <div class="result" id="output">
+    Enter values and click calculate.
+  </div>
+</div>
+
+<script>
+
+function calculateROI() {
+
+  let machine = parseFloat(document.getElementById("machineCost").value);
+  let labor = parseFloat(document.getElementById("labor").value);
+  let oldTime = parseFloat(document.getElementById("oldTime").value);
+  let newTime = parseFloat(document.getElementById("newTime").value);
+  let volume = parseFloat(document.getElementById("volume").value);
+
+  // Convert minutes to hours
+  let oldHours = oldTime / 60;
+  let newHours = newTime / 60;
+
+  // Labor cost per part
+  let oldCost = oldHours * labor;
+  let newCost = newHours * labor;
+
+  let savingsPerPart = oldCost - newCost;
+
+  let yearlySavings = savingsPerPart * volume;
+
+  let paybackMonths = (machine / yearlySavings) * 12;
+
+  if (!isFinite(paybackMonths) || paybackMonths < 0) {
+    document.getElementById("output").innerHTML = "Check your inputs.";
+    return;
+  }
+
+  document.getElementById("output").innerHTML = `
+    <p>💰 Savings per part: <span class="highlight">$${savingsPerPart.toFixed(2)}</span></p>
+    <p>📦 Annual savings: <span class="highlight">$${yearlySavings.toLocaleString(undefined,{maximumFractionDigits:0})}</span></p>
+    <p>⏱️ Payback period: <span class="highlight">${paybackMonths.toFixed(1)} months</span></p>
+    <p style="margin-top:10px; opacity:0.8;">
+      Based on labor reduction only (add material + overhead for deeper ROI)
+    </p>
+  `;
+}
+
+</script>
+
+</body>
+</html>
