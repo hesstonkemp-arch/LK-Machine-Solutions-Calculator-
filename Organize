@@ -1,1 +1,130 @@
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+
+export default function SalesOrganizerApp() {
+  const [leads, setLeads] = useState([]);
+  const [form, setForm] = useState({
+    company: "",
+    contact: "",
+    phone: "",
+    email: "",
+    equipment: "",
+    stage: "Walk-In",
+    notes: "",
+    nextAction: "",
+  });
+
+  const stages = [
+    "Walk-In",
+    "Audit Done",
+    "Quote Sent",
+    "Follow-Up",
+    "Objection Handling",
+    "Closing",
+    "Won",
+    "Lost",
+  ];
+
+  const addLead = () => {
+    if (!form.company) return;
+    setLeads([...leads, { ...form, id: Date.now() }]);
+    setForm({
+      company: "",
+      contact: "",
+      phone: "",
+      email: "",
+      equipment: "",
+      stage: "Walk-In",
+      notes: "",
+      nextAction: "",
+    });
+  };
+
+  const updateStage = (id, stage) => {
+    setLeads(
+      leads.map((lead) =>
+        lead.id === id ? { ...lead, stage } : lead
+      )
+    );
+  };
+
+  return (
+    <div className="p-6 grid gap-6">
+      <h1 className="text-2xl font-bold">Machine Sales Organizer</h1>
+
+      <Card>
+        <CardContent className="grid gap-3 p-4">
+          <h2 className="text-xl font-semibold">Add New Lead</h2>
+          <Input
+            placeholder="Company Name"
+            value={form.company}
+            onChange={(e) => setForm({ ...form, company: e.target.value })}
+          />
+          <Input
+            placeholder="Contact Name"
+            value={form.contact}
+            onChange={(e) => setForm({ ...form, contact: e.target.value })}
+          />
+          <Input
+            placeholder="Phone"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+          />
+          <Input
+            placeholder="Email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+          />
+          <Input
+            placeholder="Equipment Interested In"
+            value={form.equipment}
+            onChange={(e) => setForm({ ...form, equipment: e.target.value })}
+          />
+          <Textarea
+            placeholder="Notes from shop visit / audit"
+            value={form.notes}
+            onChange={(e) => setForm({ ...form, notes: e.target.value })}
+          />
+          <Input
+            placeholder="Next Action (Call, Visit, Quote, etc.)"
+            value={form.nextAction}
+            onChange={(e) => setForm({ ...form, nextAction: e.target.value })}
+          />
+          <Button onClick={addLead}>Add Lead</Button>
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-4">
+        {leads.map((lead) => (
+          <Card key={lead.id}>
+            <CardContent className="p-4 grid gap-2">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-bold">{lead.company}</h3>
+                  <p className="text-sm">{lead.contact} | {lead.phone}</p>
+                  <p className="text-sm">{lead.email}</p>
+                </div>
+                <select
+                  className="border rounded p-1"
+                  value={lead.stage}
+                  onChange={(e) => updateStage(lead.id, e.target.value)}
+                >
+                  {stages.map((stage) => (
+                    <option key={stage}>{stage}</option>
+                  ))}
+                </select>
+              </div>
+              <p><strong>Equipment:</strong> {lead.equipment}</p>
+              <p><strong>Notes:</strong> {lead.notes}</p>
+              <p><strong>Next Action:</strong> {lead.nextAction}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
 
